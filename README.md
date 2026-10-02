@@ -1,10 +1,10 @@
-# Actividad: Configuración de un Servicio en Kubernetes
+# Activity: Kubernetes Service Configuration
 
-## 1. Captura del Navegador (Servicio Nginx)
+## 1. Browser Screenshot (Nginx Service)
 
 ![Captura de Nginx](images/nginx-browser.png)
 
-## 2. Salida del comando `kubectl get svc`
+## 2. Output of the `kubectl get svc` command
 
 ```bash
 NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
