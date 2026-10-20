@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: parcial-fjst-demo
+  namespace: argocd-fjst
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JavierSanchez22/Virtualizacion.git
+    targetRevision: assessment-06
+    path: apps/demo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: parcial-fjst
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

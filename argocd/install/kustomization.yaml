@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Installs Argo CD into its own namespace (argocd-<initials>).
+# Kustomize rewrites the namespace of every resource, including the
+# ServiceAccount subjects of the upstream ClusterRoleBindings.
+namespace: argocd-fjst
+
+resources:
+  - namespace.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.13.3/manifests/install.yaml
+  - ingress.yaml
+
+patches:
+  # TLS is not terminated by Argo CD; Traefik serves it over plain HTTP.
+  - target:
+      kind: ConfigMap
+      name: argocd-cmd-params-cm
+    patch: |-
+      - op: add
+        path: /data
+        value:
+          server.insecure: "true"
