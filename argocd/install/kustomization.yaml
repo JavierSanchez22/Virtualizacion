@@ -2,8 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 # Installs Argo CD into its own namespace (argocd-<initials>).
-# Kustomize rewrites the namespace of every resource, including the
-# ServiceAccount subjects of the upstream ClusterRoleBindings.
 namespace: argocd-fjst
 
 resources:
@@ -21,3 +19,11 @@ patches:
         path: /data
         value:
           server.insecure: "true"
+  # Rewrite ClusterRoleBinding subject namespace from default 'argocd' to 'argocd-fjst'
+  - target:
+      kind: ClusterRoleBinding
+      name: argocd-.*
+    patch: |-
+      - op: replace
+        path: /subjects/0/namespace
+        value: argocd-fjst
