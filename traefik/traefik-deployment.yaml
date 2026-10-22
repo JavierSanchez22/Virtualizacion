@@ -1,0 +1,44 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik
+  namespace: traefik
+  labels:
+    app: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+      annotations:
+        # Scraped by Prometheus (job kubernetes-pods)
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: /metrics
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v2.10
+          args:
+            - --api.insecure
+            - --providers.kubernetesingress
+            - --providers.kubernetesingress.ingressendpoint.publishedservice=traefik/traefik
+            - --entrypoints.web.address=:80
+            # Prometheus metrics on a dedicated entrypoint
+            - --entrypoints.metrics.address=:8082
+            - --metrics.prometheus=true
+            - --metrics.prometheus.entrypoint=metrics
+            # Access logs to stdout so Promtail ships them to Loki
+            - --accesslog=true
+          ports:
+            - name: web
+              containerPort: 80
+            - name: admin
+              containerPort: 8080
+            - name: metrics
+              containerPort: 8082
